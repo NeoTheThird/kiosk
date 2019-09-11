@@ -45,7 +45,7 @@ const createWindow = () => {
     console.log("loaded new page");
     if (!mainWindow.webContents.getURL().includes(kiosk_url)) {
       console.log("displaying back button");
-      mainWindow.webContents.executeJavaScript('var link = document.createElement("a"); link.href="' + kiosk_url + '"; var btn = document.createElement("BUTTON"); btn.innerHTML = "<<<<<< ZURÜCK"; btn.style.position = "absolute"; btn.style.bottom="1em"; btn.style.left="1em"; btn.style.zIndex = "99"; btn.style.height="3em"; link.appendChild(btn); document.body.appendChild(link);', true)
+      mainWindow.webContents.executeJavaScript('var link = document.createElement("a"); link.href="' + kiosk_url + '"; var btn = document.createElement("BUTTON"); btn.innerHTML = "<<<<<< ZURÜCK"; btn.style.position = "fixed"; btn.style.bottom="1em"; btn.style.left="1em"; btn.style.zIndex = "99"; btn.style.height="3em"; link.appendChild(btn); document.body.appendChild(link);', true)
       .then(() => {})
     }
   });
