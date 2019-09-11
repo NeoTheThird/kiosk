@@ -1,7 +1,7 @@
 {
   "name": "kiosk",
   "productName": "kiosk",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Website kioks that resets when idle",
   "main": "src/index.js",
   "scripts": {
@@ -11,7 +11,10 @@
     "publish": "electron-forge publish",
     "lint": "echo \"No linting configured\""
   },
-  "keywords": ["kiosk","infoscreen"],
+  "keywords": [
+    "kiosk",
+    "infoscreen"
+  ],
   "author": {
     "name": "Jan Sprinz (NeoTheThird)",
     "email": "neo@neothethird.de"
