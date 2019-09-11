@@ -48,6 +48,24 @@ const createWindow = () => {
       mainWindow.webContents.executeJavaScript('var link = document.createElement("a"); link.href="' + kiosk_url + '"; var btn = document.createElement("BUTTON"); btn.innerHTML = "<<<<<< ZURÜCK"; btn.style.position = "fixed"; btn.style.bottom="1em"; btn.style.left="1em"; btn.style.zIndex = "99"; btn.style.height="3em"; link.appendChild(btn); document.body.appendChild(link);', true)
       .then(() => {})
     }
+    if (kiosk_url =! "https://example.com") {
+      mainWindow.webContents.executeJavaScript("function idleDetection() {\
+        var t;\
+        window.onload = resetTimer;\
+        window.onmousemove = resetTimer;\
+        window.onmousedown = resetTimer;  // catches touchscreen presses as well\
+        window.ontouchstart = resetTimer; // catches touchscreen swipes as well\
+        window.onclick = resetTimer;      // catches touchpad clicks as well\
+        window.onkeypress = resetTimer;\
+        window.addEventListener('scroll', resetTimer, true); // improved; see comments\
+        function resetTimer() {\
+          clearTimeout(t);\
+          t = setTimeout(() => {window.location.href = '" + kiosk_url + "';}, 10000);  // time is in milliseconds\
+        }\
+      }\
+      idleDetection();\
+      ", true);
+    }
   });
 
   // and load the index.html of the app.
@@ -84,7 +102,7 @@ const createWindow = () => {
   },1000)
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
 
   // Emitted when the window is closed.
   mainWindow.on('closed', () => {
