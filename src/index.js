@@ -13,6 +13,7 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
 let mainWindow;
 
 var previousPos = {x: 0, y: 0};
+var justReloaded = false;
 
 const removeMenu = () => {
   mainWindow.setMenu(null);
@@ -68,11 +69,14 @@ const createWindow = () => {
       setInterval(() => {
         let currentPos = screen.getCursorScreenPoint();
         console.log(currentPos);
-        if (currentPos.x == previousPos.x && currentPos.y == previousPos.y) {
+        if (currentPos.x == previousPos.x && currentPos.y == previousPos.y && !justReloaded) {
           console.log("Idle! Reloading...");
           mainWindow.loadURL(kiosk_url);
+          justReloaded = true;
         } else {
+          console.log("did not reload")
           previousPos = currentPos;
+          justReloaded = false;
         }
       },30000);
     })
