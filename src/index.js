@@ -1,4 +1,4 @@
-const { app, BrowserWindow, WebContents } = require('electron');
+const { app, BrowserWindow, WebContents, Menu } = require('electron');
 var screen
 var kiosk_url = "https://example.com"
 const prompt = require('electron-prompt');
@@ -14,14 +14,25 @@ let mainWindow;
 
 var previousPos = {x: 0, y: 0};
 
+const removeMenu = () => {
+  mainWindow.setMenu(null);
+  mainWindow.removeMenu();
+  mainWindow.setMenuBarVisibility(false)
+}
+
 const createWindow = () => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
-    fullscreen: false,
+    fullscreen: true,
     webPreferences: {webviewTag: true}
   });
+
+  mainWindow.setMenu(Menu.buildFromTemplate([{label: 'Setup',submenu:[
+    {role:'quit'},
+    {label:'Hide Menu', click() { removeMenu(); }}
+  ]}]));
 
   mainWindow.webContents.on('new-window', (event, url, frameName, disposition, options) => {
     event.preventDefault();
