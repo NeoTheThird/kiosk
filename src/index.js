@@ -1,6 +1,6 @@
 const { app, BrowserWindow, WebContents, Menu } = require('electron');
 var screen
-var kiosk_url = "https://example.com"
+var kiosk_url = "https://example.com/"
 const prompt = require('electron-prompt');
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -13,7 +13,7 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
 let mainWindow;
 
 var previousPos = {x: 0, y: 0};
-var justReloaded = false;
+var current_url = kiosk_url;
 
 const removeMenu = () => {
   mainWindow.setMenu(null);
@@ -43,28 +43,25 @@ const createWindow = () => {
 
   mainWindow.webContents.on('did-finish-load', () => {
     console.log("loaded new page");
-    if (!mainWindow.webContents.getURL().includes(kiosk_url)) {
-      console.log("displaying back button");
-      mainWindow.webContents.executeJavaScript('var link = document.createElement("a"); link.href="' + kiosk_url + '"; var btn = document.createElement("BUTTON"); btn.innerHTML = "<<<<<< ZURÜCK"; btn.style.position = "fixed"; btn.style.bottom="1em"; btn.style.left="1em"; btn.style.zIndex = "99"; btn.style.height="3em"; link.appendChild(btn); document.body.appendChild(link);', true)
-      .then(() => {})
-    }
-    if (kiosk_url =! "https://example.com") {
+    current_url = mainWindow.webContents.getURL();
+    if (current_url != kiosk_url) {
       mainWindow.webContents.executeJavaScript("function idleDetection() {\
         var t;\
         window.onload = resetTimer;\
         window.onmousemove = resetTimer;\
-        window.onmousedown = resetTimer;  // catches touchscreen presses as well\
-        window.ontouchstart = resetTimer; // catches touchscreen swipes as well\
-        window.onclick = resetTimer;      // catches touchpad clicks as well\
+        window.onmousedown = resetTimer;\
+        window.ontouchstart = resetTimer;\
+        window.onclick = resetTimer;\
         window.onkeypress = resetTimer;\
-        window.addEventListener('scroll', resetTimer, true); // improved; see comments\
+        window.addEventListener('scroll', resetTimer, true);\
         function resetTimer() {\
+          console.log('timer reset');\
           clearTimeout(t);\
-          t = setTimeout(() => {window.location.href = '" + kiosk_url + "';}, 10000);  // time is in milliseconds\
+          t = setTimeout(() => {window.location.assign('" + kiosk_url + "');}, 10000);\
         }\
       }\
-      idleDetection();\
-      ", true);
+      idleDetection();", true);
+      mainWindow.webContents.executeJavaScript('var link = document.createElement("a"); link.href="' + kiosk_url + '"; var btn = document.createElement("BUTTON"); btn.innerHTML = "<<<<<< ZURÜCK"; btn.style.position = "fixed"; btn.style.bottom="1em"; btn.style.left="1em"; btn.style.zIndex = "99"; btn.style.height="3em"; link.appendChild(btn); document.body.appendChild(link);', true);
     }
   });
 
@@ -75,7 +72,7 @@ const createWindow = () => {
     prompt({
       title: 'Welche Website soll angezeigt werden?',
       label: 'URL:',
-      value: 'https://gesellschaft-fuer-neuropaediatrie.org',
+      value: 'https://gesellschaft-fuer-neuropaediatrie.org/info-fuer-aerzte/skillslab/',
       inputAttrs: {
         type: 'url'
       }
@@ -86,16 +83,6 @@ const createWindow = () => {
       screen = require('electron').screen;
       setInterval(() => {
         let currentPos = screen.getCursorScreenPoint();
-        console.log(currentPos);
-        if (currentPos.x == previousPos.x && currentPos.y == previousPos.y && !justReloaded) {
-          console.log("Idle! Reloading...");
-          mainWindow.loadURL(kiosk_url);
-          justReloaded = true;
-        } else {
-          console.log("did not reload")
-          previousPos = currentPos;
-          justReloaded = false;
-        }
       },30000);
     })
     .catch(console.error);
